@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/apicircle/studio"><img src="https://img.shields.io/github/stars/apicircle/studio?style=flat-square&color=BC8CFF" alt="Stars" /></a>
-  <a href="https://github.com/apicircle/studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/apicircle/studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square" alt="License" /></a>
   <a href="https://discord.gg/apicircle"><img src="https://img.shields.io/badge/discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord" /></a>
 </p>
 
@@ -34,7 +34,7 @@
 - **Git over cloud sync** — branch, PR, diff your API collections
 - **AI-native** — MCP server lets Claude, Cursor, and agents manage your APIs
 - **Composable** — multi-repo workspaces, separate concerns with access control
-- **Open source** — MIT licensed, community-driven
+- **Open source** — Apache 2.0 licensed, community-driven
 
 ### Repositories
 
