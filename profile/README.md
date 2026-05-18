@@ -71,7 +71,8 @@ validation, and response multipliers.
 - **Generate client code** from any saved request — cURL, fetch, Node (axios),
   Python (requests), Go, and Rust.
 - **Environments** with priority ordering and cross-workspace variable sources.
-- **Assertions** and multi-step **execution plans** to chain requests.
+- **Assertions** and multi-step **execution plans** to chain requests —
+  runnable headlessly in CI with `apicircle run` (text / JSON / JUnit reports).
 - **Request history** with full headers, body previews, and assertion results.
 
 ### Use it your way
@@ -87,6 +88,7 @@ validation, and response multipliers.
 npx @apicircle/cli mock   ./openapi.yaml              # local mock server from a spec
 npx @apicircle/cli mcp    --workspace ./workspace     # MCP server for any AI client
 npx @apicircle/cli import ./postman_collection.json   # import an existing collection
+npx @apicircle/cli run    "Smoke Tests"               # run a saved plan in CI (text/json/junit)
 ```
 
 ### Core principles
