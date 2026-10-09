@@ -309,7 +309,7 @@ apicircle-lens review --base base.json --openapi openapi.yaml \
 | Option | What it posts |
 | --- | --- |
 | `--comment` | The Markdown report as one comment. A later run updates that comment. |
-| `--submit` | A review with a comment on each drifted line. `--event` sets the verdict: `COMMENT` (the default), `APPROVE` or `REQUEST_CHANGES`. |
+| `--submit` | A review with a comment for each finding, on the line the pull request changed. `--event` sets the verdict: `COMMENT` (the default), `APPROVE` or `REQUEST_CHANGES`. |
 
 After posting it prints the address:
 
@@ -321,8 +321,23 @@ Posted review to https://github.com/acme/api/pull/42#issuecomment-2400000000
 Submitted COMMENT review to https://github.com/acme/api/pull/42#pullrequestreview-2400000000 (3 inline comments, 0 off-diff).
 ```
 
-`off-diff` counts reasons about lines the pull request's diff does not show,
-which a host will not accept a comment on.
+`--submit` puts a finding's comment on the line the pull request changed inside
+the code the finding is about: the first line it added there, else the line
+where it removed some of it. A finding about code the pull request did not
+change, such as drift from the Spec in a handler the diff only shows, goes on
+the first line of that code the diff shows.
+
+A change that reaches several endpoints is one comment that names them:
+
+```text
+**`GET /api/v1/widgets`**, **`POST /api/v1/widgets`** — Shared `requireAuth` changed
+```
+
+Past three endpoints the comment counts them and lists the first eight.
+
+`off-diff` counts findings with no line to put a comment on: the diff shows none
+of their code, or the pull request removed that code outright. A host will not
+accept a comment on a line its diff does not show.
 
 ### Hosts
 
