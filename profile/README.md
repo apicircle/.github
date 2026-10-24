@@ -67,13 +67,13 @@ Lens is the paid half. What it does:
 
 Lens desktop holds the whole workspace plus the Code graph, Review, Assistant
 and MCP panels, and the workspace inside it stays free.
-[Download it from the latest release](https://github.com/apicircle/.github/releases/latest).
+On Windows, [get it on the Microsoft Store](https://apps.microsoft.com/detail/9NVQ181SZ9DL);
+on macOS and Linux, [download it from the latest release](https://github.com/apicircle/.github/releases/latest).
 
-> **The Lens installers aren't code-signed yet**, so your system asks before the
-> first run. On Windows, SmartScreen warns: choose **More info → Run anyway**.
-> On macOS, open **System Settings → Privacy & Security** and choose **Open
-> Anyway**. On Linux, install the `.deb`, or make the AppImage executable and
-> run it. The release page has the full steps. Signed builds are in progress.
+> **Both are signed.** The Microsoft Store signs the Windows app and keeps it up
+> to date, and the macOS app is signed and notarized by Apple, so each opens like
+> any other app. On Linux, install the `.deb`, or make the AppImage executable
+> and run it. The release page has the full steps.
 
 ### The Lens command line
 
