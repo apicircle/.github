@@ -47,6 +47,25 @@ that drift from those changes is missing. Two options change that:
 In CI, `--base` with an indexed checkout is the simpler path, because the head
 is always current. The [CI recipes](ci/README.md) use it.
 
+### When a side was searched only in named places
+
+A repository can name where its routes are (`codegraph route-scope`). A side
+indexed that way lists only the routes registered there, so the review says so
+above its findings, naming the side: `Head: Routes were searched only in …`,
+`Base: …`, or `Base and head: …`. A route one side has and the other side found
+outside its named places is not compared: it is never counted added or removed,
+and the Spec check does not call it missing from the code. Each commit is searched
+where its own committed `route-scope.json` says.
+
+With `--root`, the head is indexed on the spot; `--cache-dir <dir>` reads it back
+from an index `codegraph index --cache-dir` kept for the same commit and files,
+and after a change parses only the files whose text is new (Python for now),
+saying `Facts saved per file: 41 files read back, 1 file parsed` on stderr. The
+folder's `facts` folder holds most of each file's code, so keep it as private as
+the repository: see [`codegraph index`](commands.md#codegraph-index).
+`--local-fallback` indexes the side that runs out of memory once more after the
+process gives back what it parsed.
+
 ## The Spec
 
 `--openapi <file>` takes your OpenAPI contract as JSON or YAML. With it, the
@@ -63,6 +82,39 @@ already on the base is not this pull request's doing and is left out.
 **Without `--openapi`, the review still runs and reports code changes only.** It
 prints nothing to say the Spec was skipped, so check that your pipeline passes
 the option.
+
+### A Spec split across files
+
+A Spec whose `$ref`s point at other files (`schemas/user.yaml#/User`) is read
+with those files: the review reads each one from beside the Spec, including
+files those files reference, and compares the Spec in full. It reads only files
+inside the repository (`--root`, else the current folder) and never fetches a
+URL. A file it does not read is named on stderr, and the schemas in it are not
+compared:
+
+```text
+Note: the spec references 1 file that was not read: ../shared/user.yaml. Only files inside /work/shop are read and a URL is never fetched, so the schemas it holds are not compared.
+```
+
+To keep the Spec to one file, open it in the app's **Assets**, supply the files it
+references under **Referenced files**, then use **Download one file** or **Save
+as new spec**. Every `$ref` in the result points inside that file, so
+`--openapi` needs nothing beside it.
+
+### What was not compared
+
+The review reports only drift it can prove. A position it could not compare — a
+schema in a file that was not supplied, a response an interceptor reshapes, an
+object the code builds only in part — produces no finding either way. The report
+says how much was left out, above its findings:
+
+```text
+Note: 3 positions the Spec documents on 2 endpoints were not compared: 1 in files the spec references that weren't supplied and 2 the code may send but Lens read only part of the object. Nothing is reported there either way.
+```
+
+A field the Spec requires is never called missing from the code when Lens read
+only part of the object that sends it: for example, a class whose base class
+comes from a library, or an object spread from a value it could not trace.
 
 ### When your routes have a prefix the Spec omits
 

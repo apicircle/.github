@@ -122,11 +122,27 @@ raised only for an endpoint whose auth, headers or cookies the review could
 read.
 
 **Two checks run one way.** A response header is reported only when the code
-sets one the Spec does not document. Nullability is reported only on a request,
-and only when the Spec allows `null` and the code refuses it.
+sets one the Spec does not document. Nullability is reported only on a request
+body, and only when the Spec allows `null` and the code refuses it.
 
 **An `integer` in the Spec against a `number` in code is not drift.** The code
-accepts everything the Spec promises. The reverse is reported.
+accepts everything the Spec promises. The reverse is reported on a request. In a
+response neither is: an integer keeps a promise of a number.
+
+**A parameter is text on the wire.** A path, query, header or cookie parameter
+that the code keeps as text is not reported against the type the Spec gives it,
+and neither is one the code accepts repeated where the Spec has a single value.
+
+**Some formats have two spellings.** `guid` and `uuid`, `datetime` and
+`date-time`, and `url` and `uri` are each one format.
+
+**A path parameter is matched by its place in the route.** Its name is not sent,
+so `/projects/:pk` in the code and `/projects/{id}` in the Spec are one
+parameter, compared under the Spec's name.
+
+**`null` is one of the values a nullable field promises.** Code that returns
+`null` where the Spec allows null is not reported. It still is where the Spec
+does not allow null.
 
 ## Choosing a level for your pipeline
 

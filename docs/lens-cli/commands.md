@@ -15,6 +15,7 @@ what it prints, and how it exits. For the options of a command, run it with
 | [`codegraph endpoint`](#codegraph-endpoint) | Shows the code behind one endpoint. | No | Nothing |
 | [`codegraph explain`](#codegraph-explain) | Summarises the Code graph. | No | Nothing |
 | [`codegraph status`](#codegraph-status) | Checks the committed Code graph is intact. | No | Nothing |
+| [`codegraph route-scope`](#codegraph-route-scope) | Names where a repository's routes are, or shows them. | `route-scope.json` in the Code graph folder | Nothing |
 | [`codegraph support`](#codegraph-support) | Lists the languages and frameworks it parses. | No | Nothing |
 | [`review`](#review) | Finds PR Review drift, gates CI and posts to a pull request. | The Code graph folder, when it indexes the checkout | Your Git host, when posting or reading a pull request |
 | [`verify`](#verify) | Checks an OpenAPI or Swagger file is usable. | No | Nothing |
@@ -59,9 +60,17 @@ Offline: using your cached licence (valid until 2026-10-29).
 apicircle-lens codegraph index
 ```
 
-**Runs:** reads the source files your `.gitignore` keeps, finds every route and
+**Runs:** reads the source files git keeps — the root `.gitignore`, each folder's
+own `.gitignore`, and the clone's `.git/info/exclude` — finds every route and
 traces the code each one runs. To leave more out, list patterns in
 `.apicircle/.ignore` using `.gitignore` syntax.
+
+It also leaves out a folder that a file in it proves is third-party code or build
+output: `vendor` holding `modules.txt` (Go), a folder holding `pyvenv.cfg`
+(Python), `target` holding `CACHEDIR.TAG` (Cargo), `.next` holding `BUILD_ID`,
+and `bin` or `obj` beside a `.csproj`. A line with `!` and the folder's path in
+`.apicircle/.ignore` has it read. Large minified or bundled JavaScript (256 KB
+or more) is not parsed.
 
 **Writes:** `endpoints.json` and `index.json` in
 `.apicircle/workspace-lens-desktop/codegraph/`, and one rule in `.gitignore` for
@@ -85,10 +94,33 @@ Indexed 6 endpoint(s) — detected: express.
 | `→ …/index.json` | When, by which version and at which commit the Code graph was written. |
 | `→ added the parser-cache rule` | Printed the first time only. |
 
+**Says on stderr**, so stdout stays the lines above:
+
+| Line | When |
+| --- | --- |
+| `Reading the code (express)…`, then `Traced 12 of 40 endpoints…` | While it runs. On a terminal the line is rewritten; in a CI log a line is written only after 10 quiet seconds. |
+| `This repository looks too large to index whole in this process: …` | Before it reads anything, when the size of the source says the index may not fit the memory the process has. It says what to do if it runs out, and goes on. |
+| `Folders not read, as third-party code or build output: 1. vendor is Go modules copied in by go mod vendor (it holds modules.txt). …` | A folder was left out as above, with the line that has it read. |
+| `1 file was not parsed: it is minified or bundled JavaScript, too large to read as code. public/app.bundle.js (1.4 MB).` | Large minified or bundled JavaScript was left unparsed. The list is also in `endpoints.json`. |
+| `Routes were searched only in services/api. …` | The repository names where its routes are: see [`codegraph route-scope`](#codegraph-route-scope). |
+| `Read back from --cache-dir: …` | Nothing was parsed: `--cache-dir` held an index of the same commit and files. |
+| `Facts saved per file: 41 files read back, 1 file parsed` | An index was made with `--cache-dir`: the files whose text the folder had seen were not parsed again, only the rest. Python files for now; other languages follow. |
+
 **Options:** `--root <dir>` for a repository other than the current folder,
 `--workspace-id <id>` for another folder name
 (`.apicircle/workspace-<id>/codegraph/`), `--commit <sha>` to record a commit
-other than `HEAD`.
+other than `HEAD`, `--cache-dir <dir>` to keep the index in a folder outside the
+repository and read it back instead of parsing while the commit and every file it
+was made from are the same; after a change, only the files whose text is new are
+parsed.
+
+`--cache-dir` also keeps what was read from each file, in the folder's `facts`
+folder: sixteen gzip files per repository and language, at most 256 MB in all
+(the ones used longest ago go first), read only by the build of the CLI that
+wrote them. An index made again because a file changed parses only the files
+whose text is new and takes the rest from there (Python first; other languages
+follow). The facts hold most of each file's code, so keep the folder as private
+as the repository.
 
 **Exits:** `0` on success, `1` when it cannot index.
 
@@ -198,6 +230,26 @@ Without `--check` it only reports. With `--check` it exits with `1` and lists
 each problem when the Code graph is damaged, missing or from a newer version, so
 a pipeline can stop on a Code graph a merge left broken. `codegraph index`
 repairs what it reports. `--json` prints the report as JSON.
+
+## codegraph route-scope
+
+```sh
+apicircle-lens codegraph route-scope services/api apps/web/src/routes.ts
+```
+
+**Runs:** writes the folders and files that define the repository's routes to
+`.apicircle/workspace-lens-desktop/codegraph/route-scope.json`. Commit it with
+the Code graph. `codegraph index` then lists the routes registered there and no
+others, and says so on stderr; the code each listed route reaches is still traced
+across every file. `review` searches each commit where that commit's own file
+says. With no argument it shows the places, and `--clear` searches the whole
+repository again.
+
+It narrows the search for routes, not the reading: every file is still read. To
+read less of a repository that does not fit, leave folders out in
+`.apicircle/.ignore`.
+
+**Exits:** `0`; `1` when none of the places is inside the repository.
 
 ## codegraph support
 
@@ -325,6 +377,24 @@ The tools that reach outside your machine (submitting a review, opening a pull
 request, connecting a host, running a plan) are off until you start it with
 `--allow-egress`. The tools that change code are refused unless your account
 allows code changes.
+
+The server keeps one parse of the repository while its files are unchanged, so a
+search or a lookup after an index does not parse again. `--cache-dir <dir>` keeps
+`index_repository`'s index in a folder outside the repository and reads it back
+across restarts, as `codegraph index --cache-dir` does, the facts saved per file
+included: an index made again after a change parses only the files whose text is
+new.
+
+A spec split across files is read with them here too. `lens.spec_assets.map_references`
+supplies a spec asset's missing referenced files from the repository:
+- it reads each one from beside the spec, only inside the repository and never a URL;
+- it adds it to the workspace's `attachments/` folder, mapped to its reference;
+- it reads the spec again.
+
+Commit the new attachment files with your change. `lens.pr_review.review` and
+`review_pull_request` take `openapiPath`, the spec's path in the repository, read with its
+files as `review --openapi` reads them. A file either cannot reach is named with how to
+supply it.
 
 ## mock and mocks
 
