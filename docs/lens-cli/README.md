@@ -1,12 +1,12 @@
-# API Circle Lens CLI
+# API Circle CLI
 
-`apicircle-lens` is the command line for [API Circle Lens](https://apicircle.dev/lens).
-It builds a **Code graph** of your API from its source, mapping every endpoint to
+`apicircle-lens` (npm `@apicircle-lens/cli`) is the command line for the paid
+[Lens features](https://apicircle.dev/lens) of API Circle. It builds a **Code graph** of your API from its source, mapping every endpoint to
 the code that implements it. It then uses the Code graph and your **Spec** (the
 OpenAPI contract) to find **PR Review drift**: where a pull request moves the API
 away from its contract.
 
-These pages document `@apicircle-lens/cli` 2.1.
+These pages document `@apicircle-lens/cli` 2.1 (2.1.7 on npm).
 
 ## How it works
 
@@ -20,11 +20,14 @@ These pages document `@apicircle-lens/cli` 2.1.
    Spec and reports where the pull request introduced a disagreement: an
    undocumented route, a missing parameter, a different status code.
 4. **Gate and post.** `--fail-on` turns the result into an exit code your
-   pipeline can stop on. `--comment` posts the review on the pull request.
+   pipeline can stop on. `--comment` posts the review as one comment on the
+   pull request and updates it on later runs. `--submit` posts a review with an
+   inline comment on the line each finding is about.
 
 Your source code is analysed on the machine that runs the CLI and is never sent
-to API Circle. The CLI contacts `https://api.apicircle.dev` to check your key,
-and your Git host when you ask it to read or post on a pull request.
+to API Circle. The CLI calls `https://api.apicircle.dev` only for licensing: to
+check your key when a command starts, and to count how often a paid feature is
+used. It calls your Git host when you ask it to read or post on a pull request.
 
 ## Before you start
 
@@ -34,6 +37,7 @@ and your Git host when you ask it to read or post on a pull request.
 - A CLI key. Sign in at [account.apicircle.dev](https://account.apicircle.dev),
   open **CLI keys**, create a key and put it in `APICIRCLE_LENS_CLI_KEY`. In CI,
   store it as a secret.
+- Behind a proxy, set `HTTPS_PROXY` (and `NO_PROXY`) to its URL.
 
 ## Start in five minutes
 
@@ -81,15 +85,16 @@ change. The [walkthrough](walkthrough.md) shows a full run and how to read it.
 | Azure Pipelines | `azure-pipelines.yml` | [ci/azure-pipelines.md](ci/azure-pipelines.md) |
 | CircleCI | `.circleci/config.yml` | [ci/circleci.md](ci/circleci.md) |
 
-Lens speaks GitLab, Bitbucket Cloud and Azure DevOps through each host's own
+The CLI speaks GitLab, Bitbucket Cloud and Azure DevOps through each host's own
 review API, and GitHub through GitHub's.
 
 ## Versions
 
-A repository that version 2.0 indexed keeps its Code graph in
-`.apicircle/workspace-default/codegraph/`, and 2.1 keeps using that folder when
-it finds it. Replace `workspace-lens-desktop` with `workspace-default` in the
-`git show` paths on these pages if that is where yours lives.
+A repository an earlier version indexed keeps its folder. When there is no Code
+graph under `workspace-lens-desktop/` but there is one under `workspace-default/`
+(CLI 2.0) or `workspace-cli/` (an earlier `apicircle-lens mcp`), the commands
+keep using it: use that folder name in the `git show` paths on these pages.
+`--workspace-id <id>` (or `APICIRCLE_LENS_WORKSPACE_ID`) picks another folder.
 
 Run `apicircle-lens --version` to see what you have, and
 `apicircle-lens <command> --help` for the options of any command.

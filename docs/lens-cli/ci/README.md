@@ -81,10 +81,10 @@ npx --yes @apicircle-lens/cli review \
 | `--openapi openapi.yaml` | Your Spec. Without it, only code changes are reported and nothing says the Spec was skipped. |
 | `--fail-on breaking` | Exit with `1` on a Critical finding. Use `warning`, `info` or `diffracting` for another gate: see [Findings](../findings.md#choosing-a-level-for-your-pipeline). |
 | `--comment --repo --pr` | Post the review as one comment on the pull request, updated in place on later runs. |
-| `--host`, `--base-url` | Needed for any host but github.com. Each recipe sets them. |
+| `--host`, `--base-url` | `--host` for any host but github.com; `--base-url` for GitLab, Azure DevOps and GitHub Enterprise Server. Each recipe sets what its host needs. |
 | `--spec-base-path /api` | Add it when your code mounts routes under a prefix the Spec's paths omit. |
 
-To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.0 review …`.
+To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.7 review …`.
 
 ### 4. Read the exit code
 
@@ -134,5 +134,6 @@ licence cached at the last successful check. A runner that starts clean has
 none: set `APICIRCLE_LENS_CACHE_DIR` to a folder your CI service caches between
 jobs to keep working through an outage.
 
-**Version 2.0.** A repository that 2.0 indexed keeps its Code graph in
-`.apicircle/workspace-default/codegraph/`. Use that path in step 2.
+**Earlier versions.** A repository that CLI 2.0 indexed keeps its Code graph in
+`.apicircle/workspace-default/codegraph/`, and one an earlier `apicircle-lens mcp`
+indexed in `.apicircle/workspace-cli/codegraph/`. Use that path in step 2.
