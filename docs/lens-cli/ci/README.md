@@ -81,7 +81,7 @@ npx --yes @apicircle-lens/cli review \
 | `--openapi openapi.yaml` | Your Spec. Without it, only code changes are reported and nothing says the Spec was skipped. |
 | `--fail-on breaking` | Exit with `1` on a Critical finding. Use `warning`, `info` or `diffracting` for another gate: see [Findings](../findings.md#choosing-a-level-for-your-pipeline). |
 | `--comment --repo --pr` | Post the review as one comment on the pull request, updated in place on later runs. |
-| `--host`, `--base-url` | `--host` for any host but github.com; `--base-url` for GitLab, Azure DevOps and GitHub Enterprise Server. Each recipe sets what its host needs. |
+| `--host`, `--base-url` | `--host` for GitLab, Bitbucket Cloud and Azure DevOps; `--base-url` for GitLab, Azure DevOps and GitHub Enterprise Server. Each recipe sets what its host needs. |
 | `--spec-base-path /api` | Add it when your code mounts routes under a prefix the Spec's paths omit. |
 
 To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.7 review …`.
@@ -91,7 +91,7 @@ To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.7 review …
 | Code | Meaning | The build should |
 | --- | --- | --- |
 | `0` | No finding at the `--fail-on` level. | Pass. |
-| `1` | Drift at the `--fail-on` level, or the comment could not be posted, or the key was not accepted. | Fail. The review is in the job log and on the pull request. |
+| `1` | Drift at the `--fail-on` level, or the comment could not be posted, or the key was not accepted. | Fail. A review that ran is in the job log, and on the pull request when it was posted. |
 | `2` | The review could not run: no base Code graph, an unreadable Spec, a missing token. | Fail. Fix the pipeline, not the pull request. |
 
 ## After the merge

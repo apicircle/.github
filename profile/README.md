@@ -76,7 +76,7 @@ CI signs in with a CLI key, not a seat.
 
 | Surface | Where it runs | What it needs |
 | --- | --- | --- |
-| **API Circle desktop app** | Windows 10 or later (x64), macOS 13 (Ventura) or later (Apple silicon and Intel), Linux (x64) | Free for the workspace. A paid plan for the Lens panels: you sign in, and the ones your plan includes appear |
+| **API Circle desktop app** | Windows 10 or later (x64), macOS 13 (Ventura) or later (Apple silicon and Intel), Linux (x64) | Free for the workspace. A paid plan for the Lens panels: you sign in, and the ones your plan includes unlock |
 | **MCP server** | `apicircle-lens mcp`, over stdio, for an MCP client | A CLI key, on a plan that includes the MCP server |
 | **Command line** | Node.js 20 or later, on any CI runner | A CLI key, on a plan that includes the CLI |
 
