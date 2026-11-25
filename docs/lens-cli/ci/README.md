@@ -91,7 +91,7 @@ To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.9 review …
 | Code | Meaning | The build should |
 | --- | --- | --- |
 | `0` | No finding at the `--fail-on` level. | Pass. |
-| `1` | Drift at the `--fail-on` level, or the comment could not be posted, or the key was not accepted. | Fail. A review that ran is in the job log, and on the pull request when it was posted. |
+| `1` | Drift at the `--fail-on` level, or the comment could not be posted, or the key was not accepted, or an option name was not recognised. | Fail. A review that ran is in the job log, and on the pull request when it was posted. A misspelt option stops the command before it reviews anything: fix the pipeline. |
 | `2` | The review could not run: no base Code graph, an unreadable Spec, a missing token. | Fail. Fix the pipeline, not the pull request. |
 
 ## After the merge
