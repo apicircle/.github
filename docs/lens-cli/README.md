@@ -6,15 +6,7 @@ the code that implements it. It then uses the Code graph and your **Spec** (the
 OpenAPI contract) to find **PR Review drift**: where a pull request moves the API
 away from its contract.
 
-These pages document `@apicircle-lens/cli` 2.1 (2.1.7 on npm). A few sections
-already describe the next CLI release, and 2.1.7 does not do what they say yet:
-[A Spec split across files](review.md#a-spec-split-across-files) and
-[What was not compared](review.md#what-was-not-compared) in the review page
-(2.1.7 reads `--openapi` as one file); under
-[How the review decides](findings.md#how-the-review-decides), the rules for
-nullability, an integer in a response, parameters as text, format spellings,
-path parameters by place and `null` in a nullable field; and the split-spec
-paragraph under [`mcp`](commands.md#mcp).
+These pages document `@apicircle-lens/cli` 2.1 (2.1.9 on npm).
 
 ## How it works
 

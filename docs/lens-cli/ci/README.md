@@ -84,7 +84,7 @@ npx --yes @apicircle-lens/cli review \
 | `--host`, `--base-url` | `--host` for GitLab, Bitbucket Cloud and Azure DevOps; `--base-url` for GitLab, Azure DevOps and GitHub Enterprise Server. Each recipe sets what its host needs. |
 | `--spec-base-path /api` | Add it when your code mounts routes under a prefix the Spec's paths omit. |
 
-To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.7 review …`.
+To run a fixed version, name it: `npx --yes @apicircle-lens/cli@2.1.9 review …`.
 
 ### 4. Read the exit code
 
